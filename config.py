@@ -2,6 +2,7 @@ import os
 from functools import lru_cache
 
 from pydantic import BaseSettings
+from fastapi.templating import Jinja2Templates
 
 
 def get_abs_path():
@@ -22,6 +23,7 @@ class Settings(BaseSettings):
     full_detection_result = get_abs_path() + f"/{detection_path}/exp/labels/{searched_image_name}.txt"
     feature_vectors_path = get_abs_path() + "/feature-vectors/"
     jsons_path = get_abs_path() + "/jsons/named_nearest_neighbors.json"
+    templates = Jinja2Templates(directory="front/templates")
 
 @lru_cache()
 def get_settings():

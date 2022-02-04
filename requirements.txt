@@ -1,6 +1,7 @@
 fastapi
-uvicorn
+uvicorn[standard]
 tensorflow
 tensorflow-hub
 annoy==1.17.0
 requests
+jinja2
