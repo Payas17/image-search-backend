@@ -20,10 +20,11 @@ class Settings(BaseSettings):
     searched_image_path = get_abs_path() + f'/{searched_image_folder}' + searched_image_name + '.jpg'
     searched_featured_vector_path = get_abs_path() + f'/{searched_image_folder}' + searched_image_name +'.npz'
     detection_path = 'detection'
-    full_detection_result = get_abs_path() + f"/{detection_path}/exp/labels/{searched_image_name}.txt"
+    full_detection_result = get_abs_path() + f"/{detection_path}/"
     feature_vectors_path = get_abs_path() + "/feature-vectors/"
     jsons_path = get_abs_path() + "/jsons/named_nearest_neighbors.json"
     templates = Jinja2Templates(directory="front/templates")
+    debug = True
 
 @lru_cache()
 def get_settings():

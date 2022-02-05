@@ -1,8 +1,10 @@
+import config
 from .product import Product
 from .search import MercadolibreSearcher
 from .identifier import Identifier
 from .comparator import Comparator
 import os
+import shutil
 
 
 class ImageSearcher:
@@ -27,9 +29,21 @@ class ImageSearcher:
 			self.products.append(product)
 
 	def download_products_pictures(self):
+		self.remove_previous_pictures()
 		for product in self.products:
 			product.get_pictures()
 
 	def get_similar_product_url(self):
 		product = self.comparator.get_similar_product(self.products)
 		return product.url
+
+	def remove_previous_pictures(self):
+		folder = config.settings.image_path
+		for filename in os.listdir(folder):
+			file_path = os.path.join(folder, filename)
+			if os.path.isfile(file_path) or os.path.islink(file_path):
+				os.unlink(file_path)
+			elif os.path.isdir(file_path):
+				shutil.rmtree(file_path)
+
+

@@ -5,3 +5,4 @@ tensorflow-hub
 annoy==1.17.0
 requests
 jinja2
+Pillow==8.4.0
