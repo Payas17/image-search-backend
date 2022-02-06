@@ -15,6 +15,8 @@ import json
 # Annoy and Scipy for similarity calculation
 from annoy import AnnoyIndex
 from scipy import spatial
+
+import config
 from config import settings
 
 
@@ -104,6 +106,7 @@ class Comparator:
 	def cluster(self, products):
 		start_time = time.time()
 
+
 		print("---------------------------------")
 		print ("Step.1 - ANNOY index generation - Started at %s"
 		%time.ctime())
@@ -114,25 +117,29 @@ class Comparator:
 		file_index_to_product_id = {}
 		# Configuring annoy parameters
 		dims = 1792
-		n_nearest_neighbors = 20
+		n_nearest_neighbors = config.settings.products_amount * config.settings.images_amount
 		trees = 10000
 		# Reads all file names which stores feature vectors
 		allfiles = glob.glob(f'{settings.image_path}*.npz')
 
 		t = AnnoyIndex(dims, metric='angular')
-		for file_index, product in enumerate(products):
+
+		for index, product in enumerate(products):
 			# Reads feature vectors and assigns them into the file_vector
-			file_vector = np.loadtxt(product.get_featured_vector_dir())
-			# Assigns file_name, feature_vectors and corresponding product_id
-			file_name = product.id
-			file_index_to_file_name[file_index] = file_name
-			file_index_to_file_vector[file_index] = file_vector
-			# Adds image feature vectors into annoy index
-			t.add_item(file_index, file_vector)
-			print("---------------------------------")
-			print("Annoy index     : %s" %file_index)
-			print("Image file name : %s" %file_name)
-			print("--- %.2f minutes passed ---------" % ((time.time() - start_time)/60))
+			for image in product.images:
+				file_vector = np.loadtxt(image.get_featured_vector_dir())
+				# Assigns file_name, feature_vectors and corresponding product_id
+				file_name = image.get_image_name()
+				file_index = index
+				file_index_to_file_name[file_index] = file_name
+				file_index_to_file_vector[file_index] = file_vector
+				# Adds image feature vectors into annoy index
+				t.add_item(file_index, file_vector)
+				print("---------------------------------")
+				print("Annoy index     : %s" %file_index)
+				print("Image file name : %s" %file_name)
+				print("--- %.2f minutes passed ---------" % ((time.time() - start_time)/60))
+		print(file_index_to_file_name)
 		# Builds annoy index
 		t.build(trees)
 		print ("Step.1 - ANNOY index generation - Finished")
@@ -149,7 +156,6 @@ class Comparator:
 		file_index_to_file_vector[master_index] = master_vector
 		t.add_item(master_index, master_vector)
 		# Calculates the nearest neighbors of the master item
-
 		nearest_neighbors = t.get_nns_by_item(master_index, n_nearest_neighbors)
 		# Loops through the nearest neighbors of the master item
 		for j in nearest_neighbors:
@@ -164,7 +170,8 @@ class Comparator:
 			# and the product id of the similar items
 			named_nearest_neighbors.append({
 			'similarity': rounded_similarity,
-			'image_id': neighbor_file_name,
+			'image_id': neighbor_file_name.split("_")[0],
+			'image_name': neighbor_file_name,
 			'image_index': j})
 		print("---------------------------------")
 		print("Nearest Neighbors.     : %s" %nearest_neighbors)

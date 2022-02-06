@@ -24,14 +24,10 @@ class ImageSearcher:
 		return self.products
 
 	def create_products(self, products_dict):
+		self.remove_previous_pictures()
 		for product_dict in products_dict:
 			product = Product(product_dict['id'], product_dict['url'], product_dict['images'])
 			self.products.append(product)
-
-	def download_products_pictures(self):
-		self.remove_previous_pictures()
-		for product in self.products:
-			product.get_pictures()
 
 	def get_similar_product_url(self):
 		product = self.comparator.get_similar_product(self.products)

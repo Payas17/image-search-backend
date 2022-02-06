@@ -2,6 +2,7 @@ from fastapi import FastAPI, WebSocket
 from fastapi.requests import Request
 from starlette.staticfiles import StaticFiles
 
+import config
 from app.image_searcher import ImageSearcher
 from config import settings
 
@@ -21,12 +22,10 @@ async def websocket_endpoint(websocket: WebSocket):
         file = await websocket.receive_bytes()
         image_searcher = ImageSearcher(file)
         label = image_searcher.identify_object()
-        if not label:
-            response = {"found": False, "url": None}
-        else:
-            image_searcher.search_products(label)
-            image_searcher.download_products_pictures()
-            url = image_searcher.get_similar_product_url()
-            response = {"found": True, "url": url}
-        print(response)
-        await websocket.send_json(response)
+        # if not label:
+        #     response = {"found": False, "url": None}
+        # else:
+        #     image_searcher.search_products(label, limit=config.settings.products_amount)
+        #     url = image_searcher.get_similar_product_url()
+        #     response = {"found": True, "url": url}
+        await websocket.send_json({"found": False, "url": None})

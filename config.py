@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     feature_vectors_path = get_abs_path() + "/feature-vectors/"
     jsons_path = get_abs_path() + "/jsons/named_nearest_neighbors.json"
     templates = Jinja2Templates(directory="front/templates")
+    products_amount = 10
+    images_amount = 3
     debug = True
 
 @lru_cache()
